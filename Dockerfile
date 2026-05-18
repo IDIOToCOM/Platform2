@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 ENV APP_SECRET=change_me_in_production
@@ -28,7 +29,9 @@ RUN composer install --no-dev --no-scripts --prefer-dist --no-interaction
 COPY . .
 
 RUN composer dump-autoload --optimize --classmap-authoritative --no-interaction \
-    && composer run-script --no-dev post-install-cmd --no-interaction \
+    && php bin/console assets:install public --env=prod --no-debug \
+    && php bin/console importmap:install --env=prod --no-debug \
+    && php bin/console cache:clear --env=prod --no-debug \
     && php bin/console asset-map:compile --env=prod --no-debug
 
 RUN mkdir -p var/cache var/log \
