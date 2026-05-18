@@ -40,7 +40,7 @@ RUN mkdir -p var/cache var/log \
     && chmod -R 775 var
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY nginx-main.conf /etc/nginx/nginx.conf
+COPY nginx-main-debian.conf /etc/nginx/nginx.conf
 COPY nginx-railway.conf /etc/nginx/conf.d/default.conf.template
 RUN chmod +x /usr/local/bin/entrypoint.sh \
     && rm -f /etc/nginx/sites-enabled/default
