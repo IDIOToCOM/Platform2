@@ -5,6 +5,7 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
+    nginx \
     libicu-dev \
     libzip-dev \
     && docker-php-ext-install \
@@ -39,9 +40,12 @@ RUN mkdir -p var/cache var/log \
     && chmod -R 775 var
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY nginx-main.conf /etc/nginx/nginx.conf
+COPY nginx-railway.conf /etc/nginx/conf.d/default.conf.template
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+    && rm -f /etc/nginx/sites-enabled/default
 
-EXPOSE 9000
+EXPOSE 80
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm"]
